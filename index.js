@@ -18,7 +18,7 @@ const { handleCommand } = require('./commands');
 const PREFIX = process.env.PREFIX || ',';
 
 const client = new Client({
-  authStrategy: new LocalAuth({ dataPath: './.wwebjs_auth' }),
+  authStrategy: new LocalAuth({ dataPath: './data/wwebjs_auth' }),
   puppeteer: {
     headless: true,
     // Em ambientes como Railway (Docker), o Chromium ja vem instalado pelo
