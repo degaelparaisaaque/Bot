@@ -1,0 +1,16 @@
+{
+  "name": "bot-recrutamento-carluz",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:18",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y chromium && npm install && cp -n .env.example .env || true",
+  "containerEnv": {
+    "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/chromium"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint"]
+    }
+  }
+}
