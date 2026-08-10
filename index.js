@@ -14,10 +14,16 @@ const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const { getGroup, getUser, persist } = require('./db');
 const { handleCommand } = require('./commands');
+const { startWebServer, setQr, setStatus } = require('./web');
 
 const PREFIX = process.env.PREFIX || ',';
 
+// Servidor web que mostra o QR code numa pagina (link publico do Railway)
+startWebServer();
+
 const client = new Client({
+  // Sessao salva dentro de ./data (mesma pasta do volume unico do Railway,
+  // ver README.md - secao Railway). Assim so precisamos de 1 Volume.
   authStrategy: new LocalAuth({ dataPath: './data/wwebjs_auth' }),
   puppeteer: {
     headless: true,
@@ -36,24 +42,29 @@ const client = new Client({
 });
 
 client.on('qr', (qr) => {
-  console.log('\n📱 Escaneie o QR code abaixo no WhatsApp (Aparelhos conectados > Conectar aparelho):\n');
+  console.log('\n📱 Escaneie o QR code (veja também no link público da porta HTTP do Railway):\n');
   qrcode.generate(qr, { small: true });
+  setQr(qr);
 });
 
 client.on('authenticated', () => {
-  console.log('✅ Autenticado com sucesso. Sessão salva em ./.wwebjs_auth');
+  console.log('✅ Autenticado com sucesso. Sessão salva em ./data/wwebjs_auth');
+  setStatus('✅ Autenticado! Iniciando conexão...', true);
 });
 
 client.on('auth_failure', (msg) => {
   console.error('❌ Falha na autenticação:', msg);
+  setStatus(`❌ Falha na autenticação: ${msg}`, true);
 });
 
 client.on('ready', () => {
   console.log('🐺 Bot Recrutamento online e pronto!');
+  setStatus('🐺 Bot online e conectado!', true);
 });
 
 client.on('disconnected', (reason) => {
   console.error('⚠️  Cliente desconectado:', reason, '- tentando reconectar...');
+  setStatus(`⚠️ Desconectado (${reason}). Reconectando...`);
   // Pequeno delay e tenta reinicializar a sessao salva
   setTimeout(() => {
     client.initialize().catch((e) => console.error('Erro ao reinicializar:', e.message));
