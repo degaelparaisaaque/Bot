@@ -38,8 +38,13 @@ RUN npm install --omit=dev
 COPY . .
 
 # Pasta onde a sessao (QR) e o database.json ficam salvos.
-# No Railway, monte um Volume apontando pra /app/.wwebjs_auth e /app/data
-# para esses dados sobreviverem a reinicios/deploys (ver README.md).
-RUN mkdir -p /app/.wwebjs_auth /app/data
+# No Railway, monte 1 Volume apontando pra /app/data - a sessao do WhatsApp
+# fica em /app/data/wwebjs_auth e o banco em /app/data/database.json, ambos
+# dentro do mesmo volume (ver README.md).
+RUN mkdir -p /app/data
+
+# Porta HTTP onde a pagina do QR code fica disponivel. O Railway injeta a
+# variavel PORT automaticamente - isso aqui e so documentativo.
+EXPOSE 3000
 
 CMD ["node", "index.js"]
